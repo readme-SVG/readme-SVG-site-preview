@@ -1,106 +1,29 @@
-// Локализация
-const translations = {
-  en: {
-    built_by: "Built by",
-    title: "Website Badge<br/>Generator",
-    subtitle: "Paste any website URL to generate a dynamic SVG preview board.",
-    website_url: "Website URL",
-    custom_title: "Custom Title (optional)",
-    custom_title_placeholder: "Leave empty to use website title",
-    width: "Width (px)",
-    height: "Height (px, 0 = auto)",
-    scale: "Image Scale: ",
-    offset_x: "Image X Offset: ",
-    offset_y: "Image Y Offset: ",
-    radius: "Border Radius",
-    border_width: "Border Width (px)",
-    bg_color: "Background Color",
-    border_color: "Border Color",
-    title_color: "Title Color",
-    plate_color: "Title Plate Color",
-    title_opacity: "Text Opacity: ",
-    plate_opacity: "Plate Opacity: ",
-    title_position: "Title Position",
-    pos_outside_top: "Very Top (above preview)",
-    pos_overlay_top: "Top (overlay)",
-    pos_overlay_bottom: "Bottom (overlay)",
-    pos_outside_bottom: "Very Bottom (below preview)",
-    generate_btn: "GENERATE BOARD",
-    processing: "Processing layout...",
-    output_preview: "Output Preview",
-    preview_notice: "If image shows placeholder, please wait a few seconds. It will auto-refresh.",
-    integration_code: "Integration Code",
-    tab_markdown: "Markdown",
-    tab_html: "HTML",
-    tab_url: "URL",
-    copy: "Copy",
-    copied: "Copied"
-  },
-  ru: {
-    built_by: "Создано",
-    title: "Генератор<br/>Превью Сайтов",
-    subtitle: "Вставьте URL любого сайта, чтобы сгенерировать динамическую SVG-карточку.",
-    website_url: "URL сайта",
-    custom_title: "Свой заголовок (необязательно)",
-    custom_title_placeholder: "Оставьте пустым (возьмет заголовок сайта)",
-    width: "Ширина (px)",
-    height: "Высота (px, 0 = авто)",
-    scale: "Масштаб: ",
-    offset_x: "Сдвиг по X: ",
-    offset_y: "Сдвиг по Y: ",
-    radius: "Скругление углов",
-    border_width: "Толщина рамки (px)",
-    bg_color: "Цвет фона",
-    border_color: "Цвет рамки",
-    title_color: "Цвет текста",
-    plate_color: "Цвет подложки текста",
-    title_opacity: "Прозрачность текста: ",
-    plate_opacity: "Прозрачность подложки: ",
-    title_position: "Позиция заголовка",
-    pos_outside_top: "Сверху (над превью)",
-    pos_overlay_top: "Сверху (поверх)",
-    pos_overlay_bottom: "Снизу (поверх)",
-    pos_outside_bottom: "Снизу (под превью)",
-    generate_btn: "СГЕНЕРИРОВАТЬ",
-    processing: "Обработка макета...",
-    output_preview: "Предпросмотр",
-    preview_notice: "Если вместо картинки заглушка, подождите пару секунд. Она обновится автоматически.",
-    integration_code: "Код для вставки",
-    tab_markdown: "Markdown",
-    tab_html: "HTML",
-    tab_url: "Ссылка",
-    copy: "Копировать",
-    copied: "Скопировано"
-  }
-};
+import { translations } from './i18n/index.js';
 
 let currentLang = 'en';
 
+function getT(lang, key) {
+  return translations[lang]?.[key] ?? translations.en[key] ?? '';
+}
+
 function changeLanguage(lang) {
-  currentLang = lang;
-  
-  // Обновляем обычные элементы с текстом
-  document.querySelectorAll('[data-i18n]').forEach(el => {
+  currentLang = translations[lang] ? lang : 'en';
+
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.getAttribute('data-i18n');
-    if (translations[lang][key]) {
-      el.innerHTML = translations[lang][key];
-    }
-  });
-  
-  // Обновляем плейсхолдеры в инпутах
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    const key = el.getAttribute('data-i18n-placeholder');
-    if (translations[lang][key]) {
-      el.placeholder = translations[lang][key];
-    }
+    el.innerHTML = getT(currentLang, key);
   });
 
-  // Обновляем кнопку копирования, если она не в статусе "Copied"
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.placeholder = getT(currentLang, key);
+  });
+
   const copyBtn = document.getElementById('copy-btn');
   if (copyBtn && !copyBtn.classList.contains('copied')) {
-    copyBtn.textContent = translations[lang]['copy'];
+    copyBtn.textContent = getT(currentLang, 'copy');
   } else if (copyBtn && copyBtn.classList.contains('copied')) {
-    copyBtn.textContent = translations[lang]['copied'];
+    copyBtn.textContent = getT(currentLang, 'copied');
   }
 }
 
@@ -159,7 +82,7 @@ function hideError() {
 async function generate() {
   let url = document.getElementById('url-input').value.trim();
   if (!url) { 
-    showError(currentLang === 'ru' ? 'Пожалуйста, введите URL сайта' : 'Please enter a website URL'); 
+    showError(getT(currentLang, 'error_enter_url')); 
     return; 
   }
   
@@ -223,7 +146,7 @@ async function generate() {
 
   } catch (err) {
     document.getElementById('loading').classList.remove('visible');
-    showError(currentLang === 'ru' ? 'Что-то пошло не так' : 'Something went wrong');
+    showError(getT(currentLang, 'error_generic'));
   } finally {
     document.getElementById('gen-btn').disabled = false;
   }
@@ -255,13 +178,21 @@ function copyCode() {
   const code = document.getElementById('code-output').textContent;
   navigator.clipboard.writeText(code).then(() => {
     const btn = document.getElementById('copy-btn');
-    btn.textContent = translations[currentLang]['copied'];
+    btn.textContent = getT(currentLang, 'copied');
     btn.classList.add('copied');
     setTimeout(() => {
-      btn.textContent = translations[currentLang]['copy'];
+      btn.textContent = getT(currentLang, 'copy');
       btn.classList.remove('copied');
     }, 2000);
   });
+}
+
+
+const langSelect = document.getElementById('lang-select');
+if (langSelect) {
+  const initialLang = translations[langSelect.value] ? langSelect.value : 'en';
+  langSelect.value = initialLang;
+  changeLanguage(initialLang);
 }
 
 // Экспорт функций
