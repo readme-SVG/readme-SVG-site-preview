@@ -8,6 +8,18 @@ from .card import generate_svg
 
 app = Flask(__name__)
 
+def safe_int(val, default=0):
+    try:
+        return int(val) if val else default
+    except (ValueError, TypeError):
+        return default
+
+def safe_float(val, default=0.0):
+    try:
+        return float(val) if val else default
+    except (ValueError, TypeError):
+        return default
+
 def fetch_website_info(url: str) -> dict:
     try:
         if not url.startswith('http://') and not url.startswith('https://'):
@@ -17,7 +29,7 @@ def fetch_website_info(url: str) -> dict:
         
         try:
             headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-            resp = requests.get(url, headers=headers, timeout=5)
+            resp = requests.get(url, headers=headers, timeout=4)
             if resp.status_code == 200:
                 soup = BeautifulSoup(resp.content, 'html.parser')
                 title_tag = soup.find('title')
@@ -26,8 +38,8 @@ def fetch_website_info(url: str) -> dict:
         except Exception:
             pass
 
-        # Используем thum.io вместо mshots, так как он отдает чистую картинку без теней и рамок
-        screenshot_url = f"https://image.thum.io/get/width/1024/crop/768/noanimate/{url}"
+        encoded_url = urllib.parse.quote(url, safe='')
+        screenshot_url = f"https://s0.wordpress.com/mshots/v1/{encoded_url}?w=1200&h=630"
 
         return {
             "title": title,
@@ -62,19 +74,19 @@ def badge():
     if not url_param:
         return Response("Missing 'url' parameter", status=400)
 
-    width = min(max(int(request.args.get("width", 320)), 200), 1000)
-    height = max(int(request.args.get("height", 0)), 0)
-    radius = min(max(int(request.args.get("radius", 10)), 0), 30)
+    width = min(max(safe_int(request.args.get("width"), 320), 200), 1000)
+    height = max(safe_int(request.args.get("height"), 0), 0)
+    radius = min(max(safe_int(request.args.get("radius"), 10)), 0), 30)
     bg = "#" + request.args.get("bg", "0f1117").lstrip("#")
     title_color = "#" + request.args.get("title_color", "ffffff").lstrip("#")
-    title_opacity = min(max(float(request.args.get("title_opacity", 1)), 0), 1)
+    title_opacity = min(max(safe_float(request.args.get("title_opacity"), 1.0), 0.0), 1.0)
     plate_color = "#" + request.args.get("plate_color", "0f1117").lstrip("#")
-    plate_opacity = min(max(float(request.args.get("plate_opacity", 0.78)), 0), 1)
+    plate_opacity = min(max(safe_float(request.args.get("plate_opacity"), 0.78), 0.0), 1.0)
     title_position = request.args.get("title_position", "overlay_bottom").lower()
     
-    image_scale = max(float(request.args.get("image_scale", 1.0)), 0.1)
-    image_offset_x = int(request.args.get("image_offset_x", 0))
-    image_offset_y = int(request.args.get("image_offset_y", 0))
+    image_scale = max(safe_float(request.args.get("image_scale"), 1.0), 0.1)
+    image_offset_x = safe_int(request.args.get("image_offset_x"), 0)
+    image_offset_y = safe_int(request.args.get("image_offset_y"), 0)
 
     title_position_aliases = {
         "top": "overlay_top", "bottom": "overlay_bottom",
@@ -82,7 +94,7 @@ def badge():
         "outside_top": "outside_top", "outside_bottom": "outside_bottom",
     }
     title_position = title_position_aliases.get(title_position, "overlay_bottom")
-    border_width = min(max(int(request.args.get("border_width", 1)), 0), 10)
+    border_width = min(max(safe_int(request.args.get("border_width"), 1), 0), 10)
     border_color = "#" + request.args.get("border_color", "ffffff").lstrip("#")
     embed = request.args.get("embed", "true").lower() != "false"
 
@@ -115,7 +127,7 @@ def badge():
         svg,
         mimetype="image/svg+xml",
         headers={
-            "Cache-Control": "public, max-age=3600",
+            "Cache-Control": "public, max-age=60",
             "Access-Control-Allow-Origin": "*",
         },
     )
