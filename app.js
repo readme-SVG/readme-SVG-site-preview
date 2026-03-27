@@ -33,6 +33,7 @@ syncSlider('title-opacity-input', 'title-opacity-val', true);
 syncSlider('plate-opacity-input', 'plate-opacity-val', true);
 syncSlider('scale-input', 'scale-val', true);
 syncSlider('offset-x-input', 'offset-x-val', false);
+syncSlider('offset-y-input', 'offset-y-val', false);
 
 document.getElementById('url-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') generate();
@@ -81,11 +82,12 @@ async function generate() {
     
     const scale = document.getElementById('scale-input').value || 1.0;
     const offsetX = document.getElementById('offset-x-input').value || 0;
+    const offsetY = document.getElementById('offset-y-input').value || 0;
 
     const customTitleEl = document.getElementById('custom-title-input');
     const customTitle = customTitleEl ? customTitleEl.value.trim() : '';
 
-    badgeUrl = `/badge?url=${encodeURIComponent(currentUrl)}&width=${width}&height=${height}&radius=${radius}&bg=${bg}&title_color=${titleColor}&title_opacity=${titleOpacity}&plate_color=${plateColor}&plate_opacity=${plateOpacity}&title_position=${titlePosition}&border_width=${borderWidth}&border_color=${borderColor}&image_scale=${scale}&image_offset_x=${offsetX}`;
+    badgeUrl = `/badge?url=${encodeURIComponent(currentUrl)}&width=${width}&height=${height}&radius=${radius}&bg=${bg}&title_color=${titleColor}&title_opacity=${titleOpacity}&plate_color=${plateColor}&plate_opacity=${plateOpacity}&title_position=${titlePosition}&border_width=${borderWidth}&border_color=${borderColor}&image_scale=${scale}&image_offset_x=${offsetX}&image_offset_y=${offsetY}`;
     
     if (customTitle) {
         badgeUrl += `&custom_title=${encodeURIComponent(customTitle)}`;
