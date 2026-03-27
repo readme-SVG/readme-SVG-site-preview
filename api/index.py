@@ -62,7 +62,8 @@ def badge():
     if not url_param:
         return Response("Missing 'url' parameter", status=400)
 
-    width = min(max(int(request.args.get("width", 320)), 200), 600)
+    width = min(max(int(request.args.get("width", 320)), 200), 1000)
+    height = max(int(request.args.get("height", 0)), 0)
     radius = min(max(int(request.args.get("radius", 10)), 0), 30)
     bg = "#" + request.args.get("bg", "0f1117").lstrip("#")
     title_color = "#" + request.args.get("title_color", "ffffff").lstrip("#")
@@ -71,6 +72,9 @@ def badge():
     plate_opacity = min(max(float(request.args.get("plate_opacity", 0.78)), 0), 1)
     title_position = request.args.get("title_position", "overlay_bottom").lower()
     
+    image_scale = max(float(request.args.get("image_scale", 1.0)), 0.1)
+    image_offset_x = int(request.args.get("image_offset_x", 0))
+
     title_position_aliases = {
         "top": "overlay_top", "bottom": "overlay_bottom",
         "overlay_top": "overlay_top", "overlay_bottom": "overlay_bottom",
@@ -83,7 +87,6 @@ def badge():
 
     info = fetch_website_info(url_param)
     
-    # Переопределение текста, если пользователь ввел свой кастомный заголовок
     custom_title = request.args.get("custom_title")
     final_title = custom_title if custom_title and custom_title.strip() else info["title"]
 
@@ -91,6 +94,7 @@ def badge():
         title=final_title,
         image_url=info["image_url"],
         width=width,
+        card_height=height,
         background_color=bg,
         title_color=title_color,
         title_opacity=title_opacity,
@@ -101,6 +105,8 @@ def badge():
         border_width=border_width,
         border_color=border_color,
         embed_thumbnail=embed,
+        image_scale=image_scale,
+        image_offset_x=image_offset_x
     )
 
     return Response(
