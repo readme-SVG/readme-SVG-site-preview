@@ -49,6 +49,7 @@ def generate_svg(
     embed_thumbnail: bool = True,
     image_scale: float = 1.0,
     image_offset_x: int = 0,
+    image_offset_y: int = 0,
 ) -> str:
     thumb_src = image_url
 
@@ -118,7 +119,7 @@ def generate_svg(
     img_w = width * image_scale
     img_h = thumb_height * image_scale
     img_x = (width - img_w) / 2 + image_offset_x
-    img_y = thumb_y + (thumb_height - img_h) / 2
+    img_y = thumb_y + (thumb_height - img_h) / 2 + image_offset_y
 
     image_svg = ""
     if thumb_src:
