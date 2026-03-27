@@ -150,9 +150,24 @@ h1 {
   margin: 0 auto;
 }
 
+/* Двухколоночный макет */
+.layout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 30px;
+  width: 100%;
+  max-width: 1400px;
+  align-items: start;
+}
+
+.layout-right {
+  position: sticky;
+  top: 20px;
+}
+
 .card {
   width: 100%;
-  max-width: 720px;
+  max-width: 100%;
   background: var(--bg);
   border: 2px solid var(--border-strong);
   padding: 30px;
@@ -301,7 +316,7 @@ button.generate:disabled {
 
 .result-card {
   width: 100%;
-  max-width: 720px;
+  max-width: 100%;
   display: none;
 }
 
@@ -463,6 +478,16 @@ button.generate:disabled {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@media (max-width: 992px) {
+  .layout-grid {
+    grid-template-columns: 1fr;
+  }
+  .layout-right {
+    position: relative;
+    top: 0;
+  }
 }
 
 @media (max-width: 600px) {
