@@ -11,9 +11,8 @@
 <body>
 
 <div class="github-banner">
-  <span class="banner-left">Built by <span>OstinUA</span></span>
-  <a class="github-link" href="https://github.com/readme-SVG/site-preview" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <div class="banner-left">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="gh-logo">
       <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577
         0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755
         -1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998
@@ -23,8 +22,18 @@
         1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015
         3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
     </svg>
-    <span>/</span><span class="gh-username">site-preview</span>
-  </a>
+    <a href="https://github.com/readme-SVG" target="_blank" rel="noopener">readme-SVG</a>
+    <span class="separator">/</span>
+    <a href="https://github.com/readme-SVG/site-preview" target="_blank" rel="noopener" class="gh-repo">site-preview</a>
+    <span class="built-by" data-i18n="built_by">Built by</span>
+    <a href="https://github.com/OstinUA" target="_blank" rel="noopener" class="gh-author">OstinUA</a>
+  </div>
+  <div class="banner-right">
+    <select id="lang-select" onchange="changeLanguage(this.value)">
+      <option value="en">EN</option>
+      <option value="ru">RU</option>
+    </select>
+  </div>
 </div>
 
 <div class="page">
@@ -32,113 +41,113 @@
     <div class="logo">
       <span class="logo-text">WEB_BADGE</span>
     </div>
-    <h1>Website Badge<br/>Generator</h1>
-    <p class="subtitle">Paste any website URL to generate a dynamic SVG preview board.</p>
+    <h1 data-i18n="title">Website Badge<br/>Generator</h1>
+    <p class="subtitle" data-i18n="subtitle">Paste any website URL to generate a dynamic SVG preview board.</p>
   </header>
 
   <div class="card">
     <div class="input-group">
-      <label>Website URL</label>
+      <label data-i18n="website_url">Website URL</label>
       <input type="text" id="url-input" placeholder="https://example.com" />
     </div>
 
     <div class="input-group">
-      <label>Custom Title (optional)</label>
-      <input type="text" id="custom-title-input" placeholder="Leave empty to use website title" />
+      <label data-i18n="custom_title">Custom Title (optional)</label>
+      <input type="text" id="custom-title-input" data-i18n-placeholder="custom_title_placeholder" placeholder="Leave empty to use website title" />
     </div>
 
     <div class="options-grid">
       <div class="input-group">
-        <label>Width (px)</label>
+        <label data-i18n="width">Width (px)</label>
         <input type="number" id="width-input" value="320" min="200" max="1000" />
       </div>
       <div class="input-group">
-        <label>Height (px, 0 = auto)</label>
+        <label data-i18n="height">Height (px, 0 = auto)</label>
         <input type="number" id="height-input" value="0" min="0" max="1000" />
       </div>
       <div class="input-group">
-        <label>Image Scale: <span id="scale-val">1.00</span>x</label>
+        <label><span data-i18n="scale">Image Scale: </span><span id="scale-val">1.00</span>x</label>
         <input type="range" id="scale-input" value="1.0" min="0.1" max="3.0" step="0.05" />
       </div>
       <div class="input-group">
-        <label>Image X Offset: <span id="offset-x-val">0</span>px</label>
+        <label><span data-i18n="offset_x">Image X Offset: </span><span id="offset-x-val">0</span>px</label>
         <input type="range" id="offset-x-input" value="0" min="-400" max="400" step="5" />
       </div>
       <div class="input-group">
-        <label>Image Y Offset: <span id="offset-y-val">0</span>px</label>
+        <label><span data-i18n="offset_y">Image Y Offset: </span><span id="offset-y-val">0</span>px</label>
         <input type="range" id="offset-y-input" value="0" min="-400" max="400" step="5" />
       </div>
       <div class="input-group">
-        <label>Border Radius</label>
+        <label data-i18n="radius">Border Radius</label>
         <input type="number" id="radius-input" value="0" min="0" max="30" />
       </div>
       <div class="input-group">
-        <label>Border Width (px)</label>
+        <label data-i18n="border_width">Border Width (px)</label>
         <input type="number" id="border-width-input" value="2" min="0" max="10" />
       </div>
       <div class="input-group">
-        <label>Background Color</label>
+        <label data-i18n="bg_color">Background Color</label>
         <div class="color-row">
           <input type="color" id="bg-color-picker" value="#0d1117" />
           <input type="text" id="bg-color-text" value="#0d1117" />
         </div>
       </div>
       <div class="input-group">
-        <label>Border Color</label>
+        <label data-i18n="border_color">Border Color</label>
         <div class="color-row">
           <input type="color" id="border-color-picker" value="#ffffff" />
           <input type="text" id="border-color-text" value="#ffffff" />
         </div>
       </div>
       <div class="input-group">
-        <label>Title Color</label>
+        <label data-i18n="title_color">Title Color</label>
         <div class="color-row">
           <input type="color" id="title-color-picker" value="#ffffff" />
           <input type="text" id="title-color-text" value="#ffffff" />
         </div>
       </div>
       <div class="input-group">
-        <label>Title Plate Color</label>
+        <label data-i18n="plate_color">Title Plate Color</label>
         <div class="color-row">
           <input type="color" id="plate-color-picker" value="#0f1117" />
           <input type="text" id="plate-color-text" value="#0f1117" />
         </div>
       </div>
       <div class="input-group">
-        <label>Text Opacity: <span id="title-opacity-val">1.00</span></label>
+        <label><span data-i18n="title_opacity">Text Opacity: </span><span id="title-opacity-val">1.00</span></label>
         <input type="range" id="title-opacity-input" value="1" min="0" max="1" step="0.05" />
       </div>
       <div class="input-group">
-        <label>Plate Opacity: <span id="plate-opacity-val">0.80</span></label>
+        <label><span data-i18n="plate_opacity">Plate Opacity: </span><span id="plate-opacity-val">0.80</span></label>
         <input type="range" id="plate-opacity-input" value="0.80" min="0" max="1" step="0.05" />
       </div>
       <div class="input-group" style="grid-column: 1 / -1;">
-        <label>Title Position</label>
+        <label data-i18n="title_position">Title Position</label>
         <select id="title-position-input">
-          <option value="outside_top">Very Top (above preview)</option>
-          <option value="overlay_top">Top (overlay)</option>
-          <option value="overlay_bottom" selected>Bottom (overlay)</option>
-          <option value="outside_bottom">Very Bottom (below preview)</option>
+          <option value="outside_top" data-i18n="pos_outside_top">Very Top (above preview)</option>
+          <option value="overlay_top" data-i18n="pos_overlay_top">Top (overlay)</option>
+          <option value="overlay_bottom" selected data-i18n="pos_overlay_bottom">Bottom (overlay)</option>
+          <option value="outside_bottom" data-i18n="pos_outside_bottom">Very Bottom (below preview)</option>
         </select>
       </div>
     </div>
 
     <div class="error-msg" id="error-msg"></div>
 
-    <button class="generate" id="gen-btn" onclick="generate()">
+    <button class="generate" id="gen-btn" onclick="generate()" data-i18n="generate_btn">
       GENERATE BOARD
     </button>
   </div>
 
   <div class="loading" id="loading">
     <div class="spinner"></div>
-    <div>Processing layout...</div>
+    <div data-i18n="processing">Processing layout...</div>
   </div>
 
   <div class="result-card" id="result-card">
     <div class="result-section">
-      <h3>Output Preview</h3>
-      <p class="preview-notice">If image shows placeholder, please wait a few seconds. It will auto-refresh.</p>
+      <h3 data-i18n="output_preview">Output Preview</h3>
+      <p class="preview-notice" data-i18n="preview_notice">If image shows placeholder, please wait a few seconds. It will auto-refresh.</p>
       <div class="preview-wrap">
         <a id="preview-link" href="#" target="_blank" rel="noopener">
           <img id="preview-img" src="" alt="Website card preview" style="max-width:100%" />
@@ -147,15 +156,15 @@
     </div>
 
     <div class="result-section">
-      <h3>Integration Code</h3>
+      <h3 data-i18n="integration_code">Integration Code</h3>
       <div class="tabs">
-        <button class="tab active" onclick="setTab('markdown', this)">Markdown</button>
-        <button class="tab" onclick="setTab('html', this)">HTML</button>
-        <button class="tab" onclick="setTab('url', this)">URL</button>
+        <button class="tab active" onclick="setTab('markdown', this)" data-i18n="tab_markdown">Markdown</button>
+        <button class="tab" onclick="setTab('html', this)" data-i18n="tab_html">HTML</button>
+        <button class="tab" onclick="setTab('url', this)" data-i18n="tab_url">URL</button>
       </div>
       <div class="code-block">
         <pre id="code-output"></pre>
-        <button class="copy-btn" id="copy-btn" onclick="copyCode()">Copy</button>
+        <button class="copy-btn" id="copy-btn" onclick="copyCode()" data-i18n="copy">Copy</button>
       </div>
     </div>
   </div>
