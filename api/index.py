@@ -1,6 +1,6 @@
 import json
 import os
-from urllib.parse import urlparse, urljoin
+import urllib.parse
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, Response, request, send_file
@@ -13,32 +13,28 @@ def fetch_website_info(url: str) -> dict:
         if not url.startswith('http://') and not url.startswith('https://'):
             url = 'https://' + url
 
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"}
-        resp = requests.get(url, headers=headers, timeout=8)
-        resp.raise_for_status()
-        soup = BeautifulSoup(resp.content, 'html.parser')
+        title = "Website Link"
+        
+        # 1. Пытаемся получить текстовый заголовок страницы
+        try:
+            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+            resp = requests.get(url, headers=headers, timeout=5)
+            if resp.status_code == 200:
+                soup = BeautifulSoup(resp.content, 'html.parser')
+                title_tag = soup.find('title')
+                if title_tag and title_tag.text:
+                    title = title_tag.text.strip()[:100]
+        except Exception:
+            pass # Если не удалось получить title, используем дефолтный
 
-        title = ""
-        og_title = soup.find('meta', property='og:title')
-        if og_title and og_title.get('content'):
-            title = og_title['content']
-        else:
-            title_tag = soup.find('title')
-            if title_tag:
-                title = title_tag.text
-
-        image_url = ""
-        og_image = soup.find('meta', property='og:image')
-        if og_image and og_image.get('content'):
-            image_url = og_image['content']
-            if image_url.startswith('/'):
-                parsed_uri = urlparse(url)
-                base = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-                image_url = urljoin(base, image_url)
+        # 2. Генерируем ссылку на скриншот через бесплатный сервис WordPress mshots
+        encoded_url = urllib.parse.quote(url, safe='')
+        # w=800 и h=450 задают размер скриншота с пропорциями 16:9
+        screenshot_url = f"https://s0.wordpress.com/mshots/v1/{encoded_url}?w=800&h=450"
 
         return {
-            "title": title.strip()[:100] if title else "Website Link",
-            "image_url": image_url,
+            "title": title,
+            "image_url": screenshot_url,
             "url": url
         }
     except Exception as e:
