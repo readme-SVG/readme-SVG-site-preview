@@ -91,6 +91,8 @@ async function generate() {
   }
 
   hideError();
+  const layoutGrid = document.querySelector('.layout-grid');
+  layoutGrid?.classList.add('has-result');
   document.getElementById('result-card').classList.remove('visible');
   document.getElementById('loading').classList.add('visible');
   document.getElementById('gen-btn').disabled = true;
