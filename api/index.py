@@ -15,7 +15,6 @@ def fetch_website_info(url: str) -> dict:
 
         title = "Website Link"
         
-        # 1. Пытаемся получить текстовый заголовок страницы
         try:
             headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
             resp = requests.get(url, headers=headers, timeout=5)
@@ -25,11 +24,9 @@ def fetch_website_info(url: str) -> dict:
                 if title_tag and title_tag.text:
                     title = title_tag.text.strip()[:100]
         except Exception:
-            pass # Если не удалось получить title, используем дефолтный
+            pass
 
-        # 2. Генерируем ссылку на скриншот через бесплатный сервис WordPress mshots
         encoded_url = urllib.parse.quote(url, safe='')
-        # w=800 и h=450 задают размер скриншота с пропорциями 16:9
         screenshot_url = f"https://s0.wordpress.com/mshots/v1/{encoded_url}?w=800&h=450"
 
         return {
@@ -85,9 +82,13 @@ def badge():
     embed = request.args.get("embed", "true").lower() != "false"
 
     info = fetch_website_info(url_param)
+    
+    # Переопределение текста, если пользователь ввел свой кастомный заголовок
+    custom_title = request.args.get("custom_title")
+    final_title = custom_title if custom_title and custom_title.strip() else info["title"]
 
     svg = generate_svg(
-        title=info["title"],
+        title=final_title,
         image_url=info["image_url"],
         width=width,
         background_color=bg,
