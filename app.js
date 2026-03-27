@@ -1,126 +1,154 @@
-import json
-import os
-import urllib.parse
-import requests
-from bs4 import BeautifulSoup
-from flask import Flask, Response, request, send_file
-from .card import generate_svg
+let currentUrl = null;
+let currentTab = 'markdown';
+let badgeUrl = '';
+let refreshInterval = null;
+let refreshCount = 0;
 
-app = Flask(__name__)
+function syncColor(pickerId, textId) {
+  const picker = document.getElementById(pickerId);
+  const text = document.getElementById(textId);
+  picker.addEventListener('input', () => { text.value = picker.value; });
+  text.addEventListener('input', () => {
+    if (/^#[0-9a-fA-F]{6}$/.test(text.value)) picker.value = text.value;
+  });
+}
 
-def fetch_website_info(url: str) -> dict:
-    try:
-        if not url.startswith('http://') and not url.startswith('https://'):
-            url = 'https://' + url
+function syncSlider(sliderId, displayId) {
+  const slider = document.getElementById(sliderId);
+  const display = document.getElementById(displayId);
+  if (slider && display) {
+      slider.addEventListener('input', () => {
+        display.textContent = parseFloat(slider.value).toFixed(2);
+      });
+  }
+}
 
-        title = "Website Link"
-        
-        try:
-            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-            resp = requests.get(url, headers=headers, timeout=5)
-            if resp.status_code == 200:
-                soup = BeautifulSoup(resp.content, 'html.parser')
-                title_tag = soup.find('title')
-                if title_tag and title_tag.text:
-                    title = title_tag.text.strip()[:100]
-        except Exception:
-            pass
+syncColor('bg-color-picker', 'bg-color-text');
+syncColor('title-color-picker', 'title-color-text');
+syncColor('plate-color-picker', 'plate-color-text');
+syncColor('border-color-picker', 'border-color-text');
 
-        encoded_url = urllib.parse.quote(url, safe='')
-        screenshot_url = f"https://s0.wordpress.com/mshots/v1/{encoded_url}?w=800&h=450"
+syncSlider('title-opacity-input', 'title-opacity-val');
+syncSlider('plate-opacity-input', 'plate-opacity-val');
 
-        return {
-            "title": title,
-            "image_url": screenshot_url,
-            "url": url
-        }
-    except Exception as e:
-        return {
-            "title": "Error fetching info",
-            "image_url": "",
-            "url": url
-        }
+document.getElementById('url-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') generate();
+});
 
-@app.route("/")
-def index():
-    html_path = os.path.join(os.path.dirname(__file__), "..", "index.html")
-    return send_file(os.path.abspath(html_path))
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
 
-@app.route("/styles.css")
-def styles():
-    css_path = os.path.join(os.path.dirname(__file__), "..", "styles.css")
-    return send_file(os.path.abspath(css_path), mimetype="text/css")
+function hideError() {
+  document.getElementById('error-msg').classList.remove('visible');
+}
 
-@app.route("/app.js")
-def script():
-    js_path = os.path.join(os.path.dirname(__file__), "..", "app.js")
-    return send_file(os.path.abspath(js_path), mimetype="application/javascript")
+async function generate() {
+  let url = document.getElementById('url-input').value.trim();
+  if (!url) { showError('Please enter a website URL'); return; }
+  
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+  }
 
-@app.route("/badge")
-def badge():
-    url_param = request.args.get("url")
-    if not url_param:
-        return Response("Missing 'url' parameter", status=400)
+  hideError();
+  document.getElementById('result-card').classList.remove('visible');
+  document.getElementById('loading').classList.add('visible');
+  document.getElementById('gen-btn').disabled = true;
 
-    width = min(max(int(request.args.get("width", 320)), 200), 600)
-    radius = min(max(int(request.args.get("radius", 10)), 0), 30)
-    bg = "#" + request.args.get("bg", "0f1117").lstrip("#")
-    title_color = "#" + request.args.get("title_color", "ffffff").lstrip("#")
-    title_opacity = min(max(float(request.args.get("title_opacity", 1)), 0), 1)
-    plate_color = "#" + request.args.get("plate_color", "0f1117").lstrip("#")
-    plate_opacity = min(max(float(request.args.get("plate_opacity", 0.78)), 0), 1)
-    title_position = request.args.get("title_position", "overlay_bottom").lower()
+  try {
+    const infoResp = await fetch(`/info?url=${encodeURIComponent(url)}`);
+    if (!infoResp.ok) { throw new Error('Could not fetch website info.'); }
+    const info = await infoResp.json();
+    currentUrl = info.url;
+
+    const width = document.getElementById('width-input').value || 320;
+    const radius = document.getElementById('radius-input').value || 0;
+    const bg = document.getElementById('bg-color-text').value.replace('#', '');
+    const titleColor = document.getElementById('title-color-text').value.replace('#', '');
+    const plateColor = document.getElementById('plate-color-text').value.replace('#', '');
+    const titleOpacity = document.getElementById('title-opacity-input').value || 1;
+    const plateOpacity = document.getElementById('plate-opacity-input').value || 0.78;
+    const titlePosition = document.getElementById('title-position-input').value || 'overlay_bottom';
+    const borderWidth = document.getElementById('border-width-input').value || 2;
+    const borderColor = document.getElementById('border-color-text').value.replace('#', '');
     
-    title_position_aliases = {
-        "top": "overlay_top", "bottom": "overlay_bottom",
-        "overlay_top": "overlay_top", "overlay_bottom": "overlay_bottom",
-        "outside_top": "outside_top", "outside_bottom": "outside_bottom",
+    // Получаем кастомный текст
+    const customTitleEl = document.getElementById('custom-title-input');
+    const customTitle = customTitleEl ? customTitleEl.value.trim() : '';
+
+    badgeUrl = `/badge?url=${encodeURIComponent(currentUrl)}&width=${width}&radius=${radius}&bg=${bg}&title_color=${titleColor}&title_opacity=${titleOpacity}&plate_color=${plateColor}&plate_opacity=${plateOpacity}&title_position=${titlePosition}&border_width=${borderWidth}&border_color=${borderColor}`;
+    
+    if (customTitle) {
+        badgeUrl += `&custom_title=${encodeURIComponent(customTitle)}`;
     }
-    title_position = title_position_aliases.get(title_position, "overlay_bottom")
-    border_width = min(max(int(request.args.get("border_width", 1)), 0), 10)
-    border_color = "#" + request.args.get("border_color", "ffffff").lstrip("#")
-    embed = request.args.get("embed", "true").lower() != "false"
 
-    info = fetch_website_info(url_param)
+    const previewImg = document.getElementById('preview-img');
     
-    # Переопределение текста, если пользователь ввел свой кастомный заголовок
-    custom_title = request.args.get("custom_title")
-    final_title = custom_title if custom_title and custom_title.strip() else info["title"]
+    // Добавляем параметр _t для сброса кэша браузера
+    previewImg.src = badgeUrl + '&_t=' + Date.now();
 
-    svg = generate_svg(
-        title=final_title,
-        image_url=info["image_url"],
-        width=width,
-        background_color=bg,
-        title_color=title_color,
-        title_opacity=title_opacity,
-        title_plate_opacity=plate_opacity,
-        title_plate_color=plate_color,
-        title_position=title_position,
-        border_radius=radius,
-        border_width=border_width,
-        border_color=border_color,
-        embed_thumbnail=embed,
-    )
+    updateCode(currentUrl);
 
-    return Response(
-        svg,
-        mimetype="image/svg+xml",
-        headers={
-            "Cache-Control": "public, max-age=3600",
-            "Access-Control-Allow-Origin": "*",
-        },
-    )
+    document.getElementById('loading').classList.remove('visible');
+    document.getElementById('result-card').classList.add('visible');
 
-@app.route("/info")
-def info():
-    url_param = request.args.get("url")
-    if not url_param:
-        return Response("Missing 'url' parameter", status=400)
+    // Автоматическое обновление превью, пока генерируется скриншот (интервал 6 секунд, 3 попытки)
+    clearInterval(refreshInterval);
+    refreshCount = 0;
+    refreshInterval = setInterval(() => {
+        refreshCount++;
+        previewImg.src = badgeUrl + '&_t=' + Date.now();
+        if (refreshCount >= 3) {
+            clearInterval(refreshInterval);
+        }
+    }, 6000);
 
-    info_data = fetch_website_info(url_param)
-    return Response(
-        json.dumps(info_data),
-        mimetype="application/json",
-        headers={"Access-Control-Allow-Origin": "*"},
-    )
+  } catch (err) {
+    document.getElementById('loading').classList.remove('visible');
+    showError(err.message || 'Something went wrong');
+  } finally {
+    document.getElementById('gen-btn').disabled = false;
+  }
+}
+
+function updateCode(targetUrl) {
+  const absUrl = window.location.origin + badgeUrl;
+  let code = '';
+  if (currentTab === 'markdown') {
+    code = `[![Website preview](${absUrl})](${targetUrl})`;
+  } else if (currentTab === 'html') {
+    code = `<a href="${targetUrl}" target="_blank">\n  <img src="${absUrl}" alt="Website preview" />\n</a>`;
+  } else {
+    code = absUrl;
+  }
+  document.getElementById('code-output').textContent = code;
+}
+
+function setTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  if (currentUrl) {
+    updateCode(currentUrl);
+  }
+}
+
+function copyCode() {
+  const code = document.getElementById('code-output').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+window.generate = generate;
+window.setTab = setTab;
+window.copyCode = copyCode;
