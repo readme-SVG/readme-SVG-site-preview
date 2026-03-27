@@ -7,18 +7,19 @@ let refreshCount = 0;
 function syncColor(pickerId, textId) {
   const picker = document.getElementById(pickerId);
   const text = document.getElementById(textId);
+  if(!picker || !text) return;
   picker.addEventListener('input', () => { text.value = picker.value; });
   text.addEventListener('input', () => {
     if (/^#[0-9a-fA-F]{6}$/.test(text.value)) picker.value = text.value;
   });
 }
 
-function syncSlider(sliderId, displayId) {
+function syncSlider(sliderId, displayId, isFloat = true) {
   const slider = document.getElementById(sliderId);
   const display = document.getElementById(displayId);
   if (slider && display) {
       slider.addEventListener('input', () => {
-        display.textContent = parseFloat(slider.value).toFixed(2);
+        display.textContent = isFloat ? parseFloat(slider.value).toFixed(2) : slider.value;
       });
   }
 }
@@ -28,8 +29,10 @@ syncColor('title-color-picker', 'title-color-text');
 syncColor('plate-color-picker', 'plate-color-text');
 syncColor('border-color-picker', 'border-color-text');
 
-syncSlider('title-opacity-input', 'title-opacity-val');
-syncSlider('plate-opacity-input', 'plate-opacity-val');
+syncSlider('title-opacity-input', 'title-opacity-val', true);
+syncSlider('plate-opacity-input', 'plate-opacity-val', true);
+syncSlider('scale-input', 'scale-val', true);
+syncSlider('offset-x-input', 'offset-x-val', false);
 
 document.getElementById('url-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') generate();
@@ -65,6 +68,7 @@ async function generate() {
     currentUrl = info.url;
 
     const width = document.getElementById('width-input').value || 320;
+    const height = document.getElementById('height-input').value || 0;
     const radius = document.getElementById('radius-input').value || 0;
     const bg = document.getElementById('bg-color-text').value.replace('#', '');
     const titleColor = document.getElementById('title-color-text').value.replace('#', '');
@@ -75,19 +79,19 @@ async function generate() {
     const borderWidth = document.getElementById('border-width-input').value || 2;
     const borderColor = document.getElementById('border-color-text').value.replace('#', '');
     
-    // Получаем кастомный текст
+    const scale = document.getElementById('scale-input').value || 1.0;
+    const offsetX = document.getElementById('offset-x-input').value || 0;
+
     const customTitleEl = document.getElementById('custom-title-input');
     const customTitle = customTitleEl ? customTitleEl.value.trim() : '';
 
-    badgeUrl = `/badge?url=${encodeURIComponent(currentUrl)}&width=${width}&radius=${radius}&bg=${bg}&title_color=${titleColor}&title_opacity=${titleOpacity}&plate_color=${plateColor}&plate_opacity=${plateOpacity}&title_position=${titlePosition}&border_width=${borderWidth}&border_color=${borderColor}`;
+    badgeUrl = `/badge?url=${encodeURIComponent(currentUrl)}&width=${width}&height=${height}&radius=${radius}&bg=${bg}&title_color=${titleColor}&title_opacity=${titleOpacity}&plate_color=${plateColor}&plate_opacity=${plateOpacity}&title_position=${titlePosition}&border_width=${borderWidth}&border_color=${borderColor}&image_scale=${scale}&image_offset_x=${offsetX}`;
     
     if (customTitle) {
         badgeUrl += `&custom_title=${encodeURIComponent(customTitle)}`;
     }
 
     const previewImg = document.getElementById('preview-img');
-    
-    // Добавляем параметр _t для сброса кэша браузера
     previewImg.src = badgeUrl + '&_t=' + Date.now();
 
     updateCode(currentUrl);
@@ -95,7 +99,6 @@ async function generate() {
     document.getElementById('loading').classList.remove('visible');
     document.getElementById('result-card').classList.add('visible');
 
-    // Автоматическое обновление превью, пока генерируется скриншот (интервал 6 секунд, 3 попытки)
     clearInterval(refreshInterval);
     refreshCount = 0;
     refreshInterval = setInterval(() => {
