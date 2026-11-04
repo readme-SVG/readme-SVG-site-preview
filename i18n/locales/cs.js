@@ -1,6 +1,6 @@
 const cs = {
   built_by: "Vytvořil",
-  title: "Generátor<br/>webových odznaků",
+  title: "Generátor\nwebových odznaků",
   subtitle: "Vložte URL libovolného webu a vygenerujte dynamickou SVG kartu náhledu.",
   website_url: "URL webu",
   custom_title: "Vlastní název (volitelné)",

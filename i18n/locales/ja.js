@@ -1,6 +1,6 @@
 const ja = {
   built_by: "作成者",
-  title: "Web バッジ<br/>ジェネレーター",
+  title: "Web バッジ\nジェネレーター",
   subtitle: "任意の Web サイト URL を貼り付けて、動的な SVG プレビューカードを生成します。",
   website_url: "Web サイト URL",
   custom_title: "カスタムタイトル（任意）",

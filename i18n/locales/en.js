@@ -1,6 +1,6 @@
 const en = {
   built_by: "Built by",
-  title: "Website Badge<br/>Generator",
+  title: "Website Badge\nGenerator",
   subtitle: "Paste any website URL to generate a dynamic SVG preview board.",
   website_url: "Website URL",
   custom_title: "Custom Title (optional)",
