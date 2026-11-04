@@ -1,6 +1,6 @@
 const es = {
   built_by: "Creado por",
-  title: "Generador de<br/>Insignias Web",
+  title: "Generador de\nInsignias Web",
   subtitle: "Pega cualquier URL para generar una tarjeta SVG dinámica.",
   website_url: "URL del sitio",
   custom_title: "Título personalizado (opcional)",

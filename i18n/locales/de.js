@@ -1,6 +1,6 @@
 const de = {
   built_by: "Erstellt von",
-  title: "Website-Badge-<br/>Generator",
+  title: "Website-Badge-\nGenerator",
   subtitle: "Füge eine beliebige URL ein, um eine dynamische SVG-Vorschaukarte zu erzeugen.",
   website_url: "Website-URL",
   custom_title: "Benutzerdefinierter Titel (optional)",

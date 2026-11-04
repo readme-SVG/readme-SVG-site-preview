@@ -1,6 +1,6 @@
 const nl = {
   built_by: "Gemaakt door",
-  title: "Websitebadge-<br/>generator",
+  title: "Websitebadge-\ngenerator",
   subtitle: "Plak een website-URL om een dynamische SVG-previewkaart te genereren.",
   website_url: "Website-URL",
   custom_title: "Aangepaste titel (optioneel)",

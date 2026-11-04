@@ -1,6 +1,6 @@
 const zh = {
   built_by: "创建者",
-  title: "网站徽章<br/>生成器",
+  title: "网站徽章\n生成器",
   subtitle: "粘贴任意网站 URL 以生成动态 SVG 预览卡片。",
   website_url: "网站 URL",
   custom_title: "自定义标题（可选）",

@@ -1,6 +1,6 @@
 const sv = {
   built_by: "Skapad av",
-  title: "Generator för<br/>webb-badges",
+  title: "Generator för\nwebb-badges",
   subtitle: "Klistra in en webbplats-URL för att skapa ett dynamiskt SVG-förhandskort.",
   website_url: "Webbplats-URL",
   custom_title: "Anpassad titel (valfritt)",

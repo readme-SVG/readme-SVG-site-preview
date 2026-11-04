@@ -1,6 +1,6 @@
 const pl = {
   built_by: "Stworzone przez",
-  title: "Generator<br/>Odznak Stron",
+  title: "Generator\nOdznak Stron",
   subtitle: "Wklej dowolny URL, aby wygenerować dynamiczną kartę podglądu SVG.",
   website_url: "URL strony",
   custom_title: "Własny tytuł (opcjonalnie)",

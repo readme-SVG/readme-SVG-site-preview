@@ -6,7 +6,12 @@ on:
       - main
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
+
+concurrency:
+  group: scorecard-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   scorecard:
@@ -14,20 +19,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
-      security-events: write
-      id-token: write
-      actions: read
+      security-events: write # Upload Scorecard SARIF.
+      id-token: write # Publish signed results.
+      actions: read # Inspect workflow permissions.
       contents: read
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
 
       - name: Run analysis
-        uses: ossf/scorecard-action@v2.5.0
+        uses: ossf/scorecard-action@fa7117db83c52d787ae5a89f350999701505d78e # v2.5.0
         with:
           results_file: scorecard-results.sarif
           results_format: sarif
           publish_results: true
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+        with:
+          sarif_file: scorecard-results.sarif

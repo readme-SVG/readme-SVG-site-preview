@@ -1,6 +1,6 @@
 const pt = {
   built_by: "Criado por",
-  title: "Gerador de<br/>Badge de Site",
+  title: "Gerador de\nBadge de Site",
   subtitle: "Cole qualquer URL para gerar um cartão SVG dinâmico.",
   website_url: "URL do site",
   custom_title: "Título personalizado (opcional)",

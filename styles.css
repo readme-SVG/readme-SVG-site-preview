@@ -1,4 +1,10 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
   --bg: #0d1117;
@@ -13,7 +19,8 @@
   --font-body: 'Space Mono', monospace;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   background: var(--bg);
   color: var(--text);
@@ -23,8 +30,8 @@ html, body {
 }
 
 html {
-  overflow-y: scroll; /* Навсегда включает скроллбар, чтобы не было "прыжка" верстки */
-  overflow-x: hidden; /* Блокирует горизонтальный скролл во время анимации */
+  overflow-y: scroll; /* Reserve scrollbar space to prevent layout shifts */
+  overflow-x: hidden; /* Prevent horizontal scrolling during the layout animation */
 }
 
 body::before {
@@ -139,6 +146,7 @@ header {
 }
 
 h1 {
+  white-space: pre-line;
   font-size: clamp(24px, 4vw, 40px);
   font-weight: 700;
   text-transform: uppercase;
@@ -154,23 +162,24 @@ h1 {
   margin: 0 auto;
 }
 
-/* ОБНОВЛЕННАЯ СЕТКА И АНИМАЦИИ */
+/* Responsive layout and transitions */
 .layout-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 0fr;
   gap: 0px;
   width: 100%;
-  max-width: 720px; /* Изначально центрируется и занимает одну колонку */
+  max-width: 720px; /* Start centered in a single column */
   margin: 0 auto;
   align-items: start;
-  /* Резкий старт с кинематографичным замедлением (ease-out-expo) */
-  transition: max-width 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-              grid-template-columns 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-              gap 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Use a fast start with an ease-out-expo finish */
+  transition:
+    max-width 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    grid-template-columns 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    gap 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .layout-grid.has-results {
-  max-width: 1400px; /* Раздвигается на всю ширину */
+  max-width: 1400px; /* Expand to the full result layout */
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 30px;
 }
@@ -185,20 +194,24 @@ h1 {
   min-width: 0;
   opacity: 0;
   visibility: hidden;
-  transform: translateX(60px); /* Стартовая позиция выезда */
-  transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s;
+  transform: translateX(60px); /* Initial off-screen position */
+  transition:
+    opacity 0.3s ease-out,
+    transform 0.3s ease-out,
+    visibility 0.3s;
 }
 
 .layout-grid.has-results .layout-right {
   opacity: 1;
   visibility: visible;
   transform: translateX(0);
-  /* Задержка, чтобы правая панель начала проявляться уже в движении */
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s,
-              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+  /* Reveal the result panel after the layout starts moving */
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s,
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
 }
 
-/* Фикс чтобы контент не сплющивало в узкую полоску во время анимации */
+/* Keep result content from collapsing during the animation */
 @media (min-width: 993px) {
   .layout-right > div {
     min-width: 480px;
@@ -233,8 +246,9 @@ label span {
   color: var(--accent);
 }
 
-input[type="text"],
-input[type="number"],
+input[type='text'],
+input[type='url'],
+input[type='number'],
 select {
   width: 100%;
   background: var(--surface);
@@ -249,29 +263,30 @@ select {
   appearance: none;
 }
 
-input[type="text"]:focus,
-input[type="number"]:focus,
+input[type='text']:focus,
+input[type='url']:focus,
+input[type='number']:focus,
 select:focus {
   border-color: var(--accent);
 }
 
-input[type=range] {
+input[type='range'] {
   -webkit-appearance: none;
   width: 100%;
   background: transparent;
   padding: 10px 0;
 }
-input[type=range]:focus {
+input[type='range']:focus {
   outline: none;
 }
-input[type=range]::-webkit-slider-runnable-track {
+input[type='range']::-webkit-slider-runnable-track {
   width: 100%;
   height: 6px;
   cursor: pointer;
   background: var(--border);
   border: 1px solid var(--bg);
 }
-input[type=range]::-webkit-slider-thumb {
+input[type='range']::-webkit-slider-thumb {
   height: 18px;
   width: 18px;
   background: var(--accent);
@@ -280,13 +295,13 @@ input[type=range]::-webkit-slider-thumb {
   margin-top: -7px;
   border: 2px solid var(--border-strong);
 }
-input[type=range]::-moz-range-track {
+input[type='range']::-moz-range-track {
   width: 100%;
   height: 6px;
   cursor: pointer;
   background: var(--border);
 }
-input[type=range]::-moz-range-thumb {
+input[type='range']::-moz-range-thumb {
   height: 18px;
   width: 18px;
   background: var(--accent);
@@ -295,7 +310,7 @@ input[type=range]::-moz-range-thumb {
   border-radius: 0;
 }
 
-input[type="color"] {
+input[type='color'] {
   width: 44px;
   height: 44px;
   border: 2px solid var(--border);
@@ -319,8 +334,9 @@ input[type="color"] {
   align-items: center;
 }
 
-.color-row input[type="text"] {
+.color-row input[type='text'] {
   flex: 1;
+  min-width: 0;
 }
 
 button.generate {
@@ -333,7 +349,11 @@ button.generate {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    transform 0.2s;
   text-transform: uppercase;
 }
 
@@ -434,7 +454,11 @@ button.generate:disabled {
   color: var(--border-strong);
   cursor: pointer;
   text-transform: uppercase;
-  transition: all 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    transform 0.2s;
 }
 
 .copy-btn:hover {
@@ -504,7 +528,9 @@ button.generate:disabled {
   text-transform: uppercase;
 }
 
-.loading.visible { display: block; }
+.loading.visible {
+  display: block;
+}
 
 .spinner {
   display: inline-block;
@@ -517,7 +543,9 @@ button.generate:disabled {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 992px) {
@@ -539,8 +567,37 @@ button.generate:disabled {
 }
 
 @media (max-width: 600px) {
-  .options-grid { grid-template-columns: 1fr; gap: 10px; }
-  .banner-left { flex-direction: column; align-items: flex-start; gap: 4px; }
-  .banner-left .separator { display: none; }
-  .banner-left .built-by { margin-left: 0; }
+  .options-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .banner-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .banner-left .separator {
+    display: none;
+  }
+  .banner-left .built-by {
+    margin-left: 0;
+  }
+}
+
+button:focus-visible,
+a:focus-visible,
+input[type='color']:focus-visible,
+input[type='range']:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

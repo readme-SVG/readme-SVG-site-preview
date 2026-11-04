@@ -7,7 +7,8 @@ on:
   pull_request:
     types: [opened, synchronize, labeled]
 
-permissions: read-all
+permissions:
+  contents: read
 
 concurrency:
   group: ai-issue-${{ github.ref }}
@@ -15,25 +16,29 @@ concurrency:
 
 jobs:
   analyze_code:
+    name: Analyze changes
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
-      issues: write
-      pull-requests: write
+      issues: write # Create and deduplicate analysis issues.
+      pull-requests: write # Post the analysis comment on the PR.
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
+      - name: Checkout trusted workflow code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # Never execute automation code supplied by a pull request.
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: |
-          pip install --no-cache-dir PyGithub==2.5.0 requests==2.32.3
+        run: python -m pip install --disable-pip-version-check PyGithub==2.5.0 requests==2.34.2
 
       - name: Run AI Analysis
         env:

@@ -1,6 +1,6 @@
 const fr = {
   built_by: "Créé par",
-  title: "Générateur de<br/>Badge Web",
+  title: "Générateur de\nBadge Web",
   subtitle: "Collez n’importe quelle URL pour générer une carte SVG dynamique.",
   website_url: "URL du site",
   custom_title: "Titre personnalisé (optionnel)",
